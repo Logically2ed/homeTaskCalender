@@ -45,15 +45,17 @@ const colors: any = {
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  @ViewChild('modalContent', { static: true }) modalContent: TemplateRef<any>;
+  @ViewChild('modalContent', { static: true }) modalContent!: TemplateRef<any>;
 
+  title = 'Calendar';
+  
   view: CalendarView = CalendarView.Month;
 
   CalendarView = CalendarView;
 
   viewDate: Date = new Date();
 
-  modalData: {
+  modalData!: {
     action: string;
     event: CalendarEvent;
   };
