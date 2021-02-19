@@ -32,6 +32,7 @@ import { FlatpickrModule } from 'angularx-flatpickr';
     }),
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  exports: [AppComponent],
 })
 export class AppModule { }
