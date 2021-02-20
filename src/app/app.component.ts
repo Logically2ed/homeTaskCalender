@@ -3,6 +3,9 @@ import {
   ChangeDetectionStrategy,
   ViewChild,
   TemplateRef,
+  OnInit,
+  OnDestroy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {
   startOfDay,
@@ -22,6 +25,8 @@ import {
   CalendarEventTimesChangedEvent,
   CalendarView,
 } from 'angular-calendar';
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
+import { takeUntil } from 'rxjs/operators';
 
 const colors: any = {
   red: {
@@ -44,14 +49,16 @@ const colors: any = {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy{
   @ViewChild('modalContent', { static: true }) modalContent!: TemplateRef<any>;
 
   title = 'Calendar';
   
-  view: CalendarView = CalendarView.Month;
+  view: CalendarView = CalendarView.Week;
 
   CalendarView = CalendarView;
+
+  daysInWeek = 7;
 
   viewDate: Date = new Date();
 
@@ -123,7 +130,13 @@ export class AppComponent {
 
   activeDayIsOpen: boolean = true;
 
-  constructor(private modal: NgbModal) {}
+  private destroy$ = new Subject();
+
+  constructor(
+    private modal: NgbModal,
+    private breakpointObserver: BreakpointObserver,
+    private cd: ChangeDetectorRef
+  ) {}
 
   dayClicked({ date, events }: { date: Date; events: CalendarEvent[] }): void {
     if (isSameMonth(date, this.viewDate)) {
@@ -189,5 +202,43 @@ export class AppComponent {
 
   closeOpenMonthViewDay() {
     this.activeDayIsOpen = false;
+  }
+
+  ngOnInit() {
+    const CALENDAR_RESPONSIVE = {
+      small: {
+        breakpoint: '(max-width: 576px)',
+        daysInWeek: 2,
+      },
+      medium: {
+        breakpoint: '(max-width: 768px)',
+        daysInWeek: 3,
+      },
+      large: {
+        breakpoint: '(max-width: 960px)',
+        daysInWeek: 5,
+      },
+    };
+
+    this.breakpointObserver
+      .observe(
+        Object.values(CALENDAR_RESPONSIVE).map(({ breakpoint }) => breakpoint)
+      )
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((state: BreakpointState) => {
+        const foundBreakpoint = Object.values(CALENDAR_RESPONSIVE).find(
+          ({ breakpoint }) => !!state.breakpoints[breakpoint]
+        );
+        if (foundBreakpoint) {
+          this.daysInWeek = foundBreakpoint.daysInWeek;
+        } else {
+          this.daysInWeek = 7;
+        }
+        this.cd.markForCheck();
+      });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
   }
 }
