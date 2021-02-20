@@ -28,7 +28,7 @@ import { FlatpickrModule } from 'angularx-flatpickr';
     FlatpickrModule.forRoot(),
     CalendarModule.forRoot({
       provide: DateAdapter,
-      useFactory: adapterFactory,
+      useFactory: adapterFactory
     }),
   ],
   providers: [],
