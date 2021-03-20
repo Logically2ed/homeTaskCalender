@@ -1,3 +1,5 @@
+PUT ON HOLD TO GET BETTER IDEA OF WHAT I WANT FROM IT.
+
 # HouseToDoList
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.2.0.
